@@ -1,0 +1,14 @@
+2019-02-15 15:57:42,985 120 'CnkiSearch' object has no attribute 'cookie'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_search_step1.py", line 114, in get_page
+    cookie = self.cookie
+AttributeError: 'CnkiSearch' object has no attribute 'cookie'
+2019-02-15 16:32:56,982 10188 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 115, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
