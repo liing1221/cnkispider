@@ -88,7 +88,7 @@ class ProxyManager:
             proxy_expires = self.EXPIRES_TIME     # 过期时间
             if proxy_expires + self.INTERVAL < now_time:   # 过期从新获取
                 self.set_proxy()
-            return self.PROXY_IP,self.PROXY_PORT
+            return (self.PROXY_IP,self.PROXY_PORT)
         else:  # 使用代理池时
             while True:
                 try:
@@ -97,7 +97,7 @@ class ProxyManager:
                     if proxy_expires + self.INTERVAL < now_time:  # 移除过期代理
                         self.proxy_remove(proxy)
                     else:
-                        return proxy[0], proxy[1]
+                        return (proxy[0], proxy[1])
                 except IndexError as e:
                     self.get_pool()
 

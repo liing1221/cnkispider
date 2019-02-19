@@ -12,3 +12,217 @@ Traceback (most recent call last):
   File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 115, in get_cookie
     cookie_expires = self.EXPIRES_TIME                                # 过期时间
 AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:24:29,167 6052 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:\liing_code\spider_projects\cnkispider\cookiemanage.py", line 100, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:26:07,261 14204 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 100, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:27:27,884 10436 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 101, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:28:34,267 10236 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 102, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:29:07,356 6584 'CookieManager' object has no attribute 'EXPIRES_TIME'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cookiemanage.py", line 103, in get_cookie
+    cookie_expires = self.EXPIRES_TIME                                # 过期时间
+AttributeError: 'CookieManager' object has no attribute 'EXPIRES_TIME'
+2019-02-18 14:50:13,282 7016 'CnkiSearch' object has no attribute 'cookie'
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_search_step1.py", line 141, in get_page
+    cookie = self.cookie
+AttributeError: 'CnkiSearch' object has no attribute 'cookie'
+2019-02-19 13:19:33,001 7504 Invalid input of type: 'dict'. Convert to a byte, string or number first.
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:\liing_code\spider_projects\cnkispider\redismanage.py", line 120, in put_page
+    self.r.rpush(wait_parse_key, item)                        # 推进redis的待解析队列
+  File "D:\Anaconda3\envs\python36\lib\site-packages\redis-3.0.1-py3.6.egg\redis\client.py", line 1657, in rpush
+    return self.execute_command('RPUSH', name, *values)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\redis-3.0.1-py3.6.egg\redis\client.py", line 766, in execute_command
+    connection.send_command(*args)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\redis-3.0.1-py3.6.egg\redis\connection.py", line 619, in send_command
+    self.send_packed_command(self.pack_command(*args))
+  File "D:\Anaconda3\envs\python36\lib\site-packages\redis-3.0.1-py3.6.egg\redis\connection.py", line 659, in pack_command
+    for arg in imap(self.encoder.encode, args):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\redis-3.0.1-py3.6.egg\redis\connection.py", line 124, in encode
+    "byte, string or number first." % typename)
+redis.exceptions.DataError: Invalid input of type: 'dict'. Convert to a byte, string or number first.
+2019-02-19 13:31:52,850 8892 HTTPConnectionPool(host='115.204.121.165', port=34777): Read timed out.
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 360, in _error_catcher
+    yield
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 442, in read
+    data = self._fp.read(amt)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 449, in read
+    n = self.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 493, in readinto
+    n = self.fp.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 750, in generate
+    for chunk in self.raw.stream(chunk_size, decode_content=True):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 494, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 459, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "D:\Anaconda3\envs\python36\lib\contextlib.py", line 99, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 365, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='115.204.121.165', port=34777): Read timed out.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_spider_step2.py", line 91, in get_page
+    response = s.get(url, headers=self.headers, proxies=proxies, timeout=self.timeout)    # cookies = self.cookies
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 546, in get
+    return self.request('GET', url, **kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 686, in send
+    r.content
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 828, in content
+    self._content = b''.join(self.iter_content(CONTENT_CHUNK_SIZE)) or b''
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 757, in generate
+    raise ConnectionError(e)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='115.204.121.165', port=34777): Read timed out.
+2019-02-19 13:31:52,977 8892 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_spider_step2.py", line 105, in put_item
+    id = item['id']
+TypeError: 'NoneType' object is not subscriptable
+2019-02-19 13:32:52,693 8892 HTTPConnectionPool(host='218.73.137.239', port=28661): Read timed out.
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 360, in _error_catcher
+    yield
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 442, in read
+    data = self._fp.read(amt)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 449, in read
+    n = self.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 493, in readinto
+    n = self.fp.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 750, in generate
+    for chunk in self.raw.stream(chunk_size, decode_content=True):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 494, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 459, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "D:\Anaconda3\envs\python36\lib\contextlib.py", line 99, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 365, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='218.73.137.239', port=28661): Read timed out.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_spider_step2.py", line 91, in get_page
+    response = s.get(url, headers=self.headers, proxies=proxies, timeout=self.timeout)    # cookies = self.cookies
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 546, in get
+    return self.request('GET', url, **kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 686, in send
+    r.content
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 828, in content
+    self._content = b''.join(self.iter_content(CONTENT_CHUNK_SIZE)) or b''
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 757, in generate
+    raise ConnectionError(e)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='218.73.137.239', port=28661): Read timed out.
+2019-02-19 13:32:52,697 8892 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_spider_step2.py", line 105, in put_item
+    id = item['id']
+TypeError: 'NoneType' object is not subscriptable
+2019-02-19 18:25:58,299 10300 HTTPConnectionPool(host='171.41.122.65', port=33921): Read timed out.
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 360, in _error_catcher
+    yield
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 442, in read
+    data = self._fp.read(amt)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 449, in read
+    n = self.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 493, in readinto
+    n = self.fp.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 750, in generate
+    for chunk in self.raw.stream(chunk_size, decode_content=True):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 494, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 459, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "D:\Anaconda3\envs\python36\lib\contextlib.py", line 99, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 365, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='171.41.122.65', port=33921): Read timed out.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_search_step1.py", line 126, in get_first
+    self.s.get(url=url, headers=self.headers, proxies=proxies, timeout=self.timeout)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 546, in get
+    return self.request('GET', url, **kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 686, in send
+    r.content
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 828, in content
+    self._content = b''.join(self.iter_content(CONTENT_CHUNK_SIZE)) or b''
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 757, in generate
+    raise ConnectionError(e)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='171.41.122.65', port=33921): Read timed out.

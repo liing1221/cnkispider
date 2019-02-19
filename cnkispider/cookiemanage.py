@@ -28,51 +28,32 @@ class CookieManager:
     URL = "http://kns.cnki.net/kns/brief/default_result.aspx"
     INTERVAL = 900  # 15分钟
     POOL = []                             # cookies池
-    _instance_lock = threading.Lock()     # 使单列模式支持多线程
-
-    def __new__(cls, *args, **kwargs):
-        """
-        构造CookieManager的单列模式，并支持多线程调用
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        if not hasattr(CookieManager, '_instance'):
-            with CookieManager._instance_lock:
-                if not hasattr(CookieManager, '_instance'):
-                    CookieManager._instance = object.__new__(cls)
-                    CookieManager._INIT = True
-        return CookieManager._instance
 
     def __init__(self, url=None, pool=True):
         """
         初始化过期时间
         :param pool:
         """
-        if hasattr(CookieManager, '_INIT'):              # 单列模式，初始化一次
-            self._INIT = False
-            if url:
-                self.URL = url     # 初始化cookie请求的url
-            self.cookies = RequestsCookieJar()
-            self.user_agent = UserAgent().random
-            self.header = {
-                "Host": "kns.cnki.net",
-                "Connection": "keep-alive",
-                "Cache-Control": "max-age=0",
-                "Upgrade-Insecure-Requests": "1",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                "Accept-Encoding": "gzip,deflate",
-                "Accept-Language": "zh-CN,zh;q=0.9",
-                "User-Agent": self.user_agent
-            }
-            self.proxymanager = ProxyManager(pool=False)
-            self.timeout = 10
-            self.cookie = {}       # 初始化cookie
-            self.pool = pool       # 是否使用cookie池：True or False
-            if self.pool:
-                self.get_pool()
-            else:
-                self.set_cookie()
+        if url:
+            self.URL = url     # 初始化cookie请求的url
+        self.cookies = RequestsCookieJar()
+        self.user_agent = UserAgent().random
+        self.header = {
+            "Host": "kns.cnki.net",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "Upgrade-Insecure-Requests": "1",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip,deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "User-Agent": self.user_agent}
+        self.proxymanager = ProxyManager(pool=False)
+        self.timeout = 10
+        self.pool = pool                # 是否使用cookie池：True or False
+        if self.pool:
+            self.get_pool()
+        else:
+            self.set_cookie()
 
     @logger.log_decoratore
     def set_cookie(self):
@@ -81,25 +62,32 @@ class CookieManager:
         :return:
         """
         retry_time = 5  # 重复请求次数
-        IP, PORT = self.proxymanager.get_proxy()
-        self.proxy = {
-            'https': 'http://{}:{}'.format(IP, PORT)
-        }
+        # IP, PORT = self.proxymanager.get_proxy()
+        # self.proxy = {
+        #     'https': 'http://{}:{}'.format(IP, PORT)
+        # }
         while True:
             try:
+                print(1111111)
+                print(self.URL)
                 resp = requests.get(
                     self.URL,
                     headers=self.header,
-                    proxies=self.proxy,
+                    # proxies=self.proxy,
                     cookies=self.cookies,
                     timeout=self.timeout)
+                print(resp.status_code)
                 if resp.status_code == 200:
                     self.EXPIRES_TIME = int(time.time())    # 过期时间
                     self.cookies.update(resp.cookies)
-                return self.cookies, self.EXPIRES_TIME
+                    print('resp.cookies>>', resp.cookies)
+                    print('self.cookies', self.cookies)
+                return self.cookies, self.header, self.EXPIRES_TIME
             except Exception as e:
                 retry_time -= 1
                 if retry_time <= 0:
+                    print('self.cookies>> {}...!'.format(self.cookies))
+                    print(e)
                     return self.cookies, 0
                 time.sleep(0.1)
 
@@ -119,8 +107,10 @@ class CookieManager:
         else:                                                                 # 使用cookie池时
             while True:
                 try:
-                    cookies = random.choice(self.POOL)                        # 过期维护
-                    cookie_expires = cookies[1]                               # 过期时间
+                    cookies = random.choice(
+                        self.POOL)                        # 过期维护
+                    # 过期时间
+                    cookie_expires = cookies[1]
                     if cookie_expires + self.INTERVAL < now_time:             # 移除过期cookie
                         self.cookie_remove(cookies)
                     else:
@@ -158,51 +148,34 @@ class CookieManager:
 
 
 class RedisCookieManager:
+    """
+    创建redis的cookie管理类：为请求添加cookie,并进行过期维护
+    """
     URL = "http://kns.cnki.net/kns/brief/default_result.aspx"
     INTERVAL = 1500  # 25分钟
-    _instance_lock = threading.Lock()     # 使单列模式支持多线程
-
-    def __new__(cls, *args, **kwargs):
-        """
-        构造CookieManager的单列模式，并支持多线程调用
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        if not hasattr(cls, '_instance'):
-            with cls._instance_lock:
-                if not hasattr(cls, '_instance'):
-                    cls._instance = object.__new__(cls)
-                    cls._INIT = True
-        return cls._instance
 
     def __init__(self, url=None, num=10):
         """
         初始化过期时间
         :param pool:
         """
-        if hasattr(RedisCookieManager, '_INIT'):              # 单列模式，初始化一次
-            self._INIT = False
-            if url:
-                self.URL = url                                # 初始化cookie请求的url
-            self.cookies = RequestsCookieJar()
-            self.user_agent = UserAgent().random
-            self.headers = {
-                "Host": "kns.cnki.net",
-                "Connection": "keep-alive",
-                "Cache-Control": "max-age=0",
-                "Upgrade-Insecure-Requests": "1",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                "Accept-Encoding": "gzip,deflate",
-                "Accept-Language": "zh-CN,zh;q=0.9",
-                "User-Agent": self.user_agent
-            }
-            self.proxymanager = ProxyManager(pool=False)
-            self.timeout = 20
-            self.cookie = {}                                  # 初始化cookie
-            self.redis_host = 'localhost'
-            self.redis_port = 6379
-            self.num = num  # redis中存储的cookie数量， 默认10个
+        self.URL = url                                # 初始化cookie请求的url
+        self.cookies = RequestsCookieJar()
+        self.user_agent = UserAgent().chrome
+        self.headers = {
+            "Host": "kns.cnki.net",
+            "Connection": "keep-alive",
+            "Cache-Control": "max-age=0",
+            "Upgrade-Insecure-Requests": "1",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Encoding": "gzip,deflate",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "User-Agent": self.user_agent}
+        self.proxymanager = ProxyManager(pool=False)
+        self.timeout = 20
+        self.redis_host = 'localhost'
+        self.redis_port = 6379
+        self.num = num                               # redis中存储的cookie数量， 默认10个
 
     @logger.log_decoratore
     def set_cookie(self):
@@ -226,16 +199,15 @@ class RedisCookieManager:
                 if resp.status_code == 200:
                     self.cookies.update(resp.cookies)
                     self.EXPIRES_TIME = int(time.time())      # 过期时间
-                    self.cookie = resp.cookies
-                    print(resp.status_code)
-                    cookie = resp.cookies
-                    cookie['expire'] = self.EXPIRES_TIME
+                    print('resp.cookies>>', resp.cookies)
+                    print('self.cookies', self.cookies)
                 return self.cookies, self.EXPIRES_TIME
             except Exception as e:
                 retry_time -= 1
                 if retry_time <= 0:
                     resp = Response()
-                    cookie = {}
+                    cookie = resp.cookies
+                    print('cookie>> {}...!'.format(cookie))
                     return cookie
                 time.sleep(0.1)
 
