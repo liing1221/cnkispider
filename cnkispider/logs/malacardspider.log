@@ -226,3 +226,50 @@ Traceback (most recent call last):
   File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 757, in generate
     raise ConnectionError(e)
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='171.41.122.65', port=33921): Read timed out.
+2019-02-20 11:28:04,103 10984 HTTPConnectionPool(host='58.19.15.121', port=35840): Read timed out.
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 360, in _error_catcher
+    yield
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 442, in read
+    data = self._fp.read(amt)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 449, in read
+    n = self.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\http\client.py", line 493, in readinto
+    n = self.fp.readinto(b)
+  File "D:\Anaconda3\envs\python36\lib\socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+socket.timeout: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 750, in generate
+    for chunk in self.raw.stream(chunk_size, decode_content=True):
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 494, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 459, in read
+    raise IncompleteRead(self._fp_bytes_read, self.length_remaining)
+  File "D:\Anaconda3\envs\python36\lib\contextlib.py", line 99, in __exit__
+    self.gen.throw(type, value, traceback)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\urllib3\response.py", line 365, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='58.19.15.121', port=35840): Read timed out.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\liing_code\spider_projects\cnkispider\logmanage.py", line 101, in log
+    return func(*args, **kwargs)
+  File "D:/liing_code/spider_projects/cnkispider/cnki_search_step1.py", line 106, in get_first
+    timeout=self.timeout)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 546, in get
+    return self.request('GET', url, **kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\sessions.py", line 686, in send
+    r.content
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 828, in content
+    self._content = b''.join(self.iter_content(CONTENT_CHUNK_SIZE)) or b''
+  File "D:\Anaconda3\envs\python36\lib\site-packages\requests\models.py", line 757, in generate
+    raise ConnectionError(e)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='58.19.15.121', port=35840): Read timed out.
