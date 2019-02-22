@@ -17,10 +17,12 @@ from sqlmanage import SqlUrlManager
 
 logger = LogManager(level=30)
 
+
 class CnkiSpider:
     """
     根据给定URL，抓取页面，并更新数据库cnki_urls的url_state，存入redis待解析
     """
+
     def __init__(self):
         """
         初始化CNKI抓取对象
@@ -40,8 +42,7 @@ class CnkiSpider:
             "Accept-Encoding": "gzip,deflate",
             "Accept-Language": "zh-CN,zh;q=0.9",
             "Referer": "http://kns.cnki.net/kns/brief/default_result.aspx",
-            "User-Agent": self.user_agent
-        }
+            "User-Agent": self.user_agent}
         # self.cookies = {"Ecp_ClientId": "6190218174501425684",
         #                "Ecp_IpLoginFail": "190218124.202.241.162",
         #                "ASP.NET_SessionId": "oedpnlpza3h2dx5o4i5m5xhs",
@@ -88,7 +89,11 @@ class CnkiSpider:
             retries -= 1
             proxies = self.make_proxy()
             s = requests.Session()
-            response = s.get(url, headers=self.headers, proxies=proxies, timeout=self.timeout)    # cookies = self.cookies
+            response = s.get(
+                url,
+                headers=self.headers,
+                proxies=proxies,
+                timeout=self.timeout)    # cookies = self.cookies
             response.encoding = 'utf-8'
             if response.status_code == 200:
                 item['page'] = response.text
