@@ -11,9 +11,10 @@
 import time
 import requests
 from lxml import etree
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode
 from fake_useragent import UserAgent
 from logmanage import LogManager
+from csvmanage import CsvReader
 from proxymanage import ProxyManager
 from sqlmanage import SqlUrlManager
 
@@ -25,7 +26,8 @@ class CnkiSearch:
     通过知网检索入口以及检索关键字，检索获取文献列表:获取文献列表信息以及url
     :知网登陆检索流程：get请求初始化cookie,post请求进行注册检索信息，再get请求查询结果
     """
-    def __init__(self,proxies=True):
+
+    def __init__(self, proxies=False):
         """
         初始化搜索url,headers以及cookies
         """
@@ -33,8 +35,8 @@ class CnkiSearch:
         self.timeout = 20
         self.user_agent = UserAgent().chrome
         self.s = requests.Session()
-        self.proxy_manager = ProxyManager(pool=False)
         if proxies:
+            self.proxy_manager = ProxyManager(pool=False)
             ip, port = self.proxy_manager.get_proxy()
             self.proxies = {
                 'https': 'http://{}:{}'.format(ip, port),
@@ -42,7 +44,8 @@ class CnkiSearch:
             }
         else:
             self.proxies = None
-        self.base_url = "http://kns.cnki.net/kns/brief/default_result.aspx"
+        # self.base_url = "http://kns.cnki.net/kns/brief/default_result.aspx"
+        self.base_url = "http://kns.cnki.net/kns/brief/result.aspx?dbprefix=scdb"
         self.post_url = 'http://kns.cnki.net/kns/request/SearchHandler.ashx'
         # self.search_url = 'http://kns.cnki.net/kns/brief/brief.aspx?'
         self.headers = {
@@ -55,7 +58,8 @@ class CnkiSearch:
             "Accept-Language": "zh-CN,zh;q=0.9",
             "User-Agent": self.user_agent}
 
-    def get_param(self, keyword, sortkey=None):
+    @staticmethod
+    def get_param(keyword, sortkey=None):     # 类方法
         """
         初始化请求参数:检索关键字keyword，以及结果列表的排列方式sortkey,sortkey取值:引用排序——"(被引频次,'INTEGER') desc",
         相关性排序——"(FFD,'RANK') desc",下载排序——"(下载频次,'INTEGER') desc", 默认排序——' HTTP/1.1'无queryid参数
@@ -74,7 +78,7 @@ class CnkiSearch:
                 "t": int(time.time() * 1000),
                 "keyValue": keyword,
                 "S": "1",
-                "sorttype": ' ' #HTTP/1.1'
+                "sorttype": ' '  # HTTP/1.1'
             }
         else:
             params = {
@@ -97,7 +101,6 @@ class CnkiSearch:
     def get_first(self):
         """
         第一次请求：构建请求会话，初始化cookies
-        :param url: 登录接口请求
         :return:
         """
         url = self.base_url
@@ -113,6 +116,7 @@ class CnkiSearch:
                 headers=self.headers,
                 timeout=self.timeout)
 
+    @logger.log_decoratore
     def post_second(self, keyword):
         """
         第二次post请求入口页:post注册提交查询字符串，获取查询结果链接字符串
@@ -120,26 +124,24 @@ class CnkiSearch:
         :return:
         """
         header = {"Accept": "*/*",
-                  # "Content-Length": "519",
                   "Content-Type": "application/x-www-form-urlencoded",
                   "Origin": "http://kns.cnki.net",
-                  # "Proxy-Connection": "keep-alive"
+                  # "Proxy-Connection": "keep-alive",
+                  "Referer": "http://kns.cnki.net/kns/brief/result.aspx?dbprefix=scdb"
                   }
         headers = self.headers.update(header)
         params = {
             "action": '',
-            "ua": "1.11",
+            "NaviCode": '*',
+            "ua": "1.21",
             "isinEn": "1",
-            "PageName": "ASP.brief_default_result_aspx",
+            "PageName": "ASP.brief_result_aspx",
             "DbPrefix": "SCDB",
             "DbCatalog": "中国学术文献网络出版总库",
-            "ConfigFile": "SCDBINDEX.xml",
+            "ConfigFile": "SCDB.xml",
             "db_opt": "CJFQ, CDFD, CMFD, CPFD, IPFD, CCND, CCJD",
-            "txt_1_sel": "SU$%=|",
-            "txt_1_value1": keyword,
-            "txt_1_special1": "%",
+            "expertvalue": keyword,
             "his": "0",
-            "parentdb": "SCDB",
             "__": time.strftime('%a %b %d %Y %H:%M:%S') + ' GMT+0800 (中国标准时间)'
         }
         if self.proxies:
@@ -167,11 +169,56 @@ class CnkiSearch:
         :return: html页面
         """
         retry = self.retries
+        header = {
+            "Referer": "http://kns.cnki.net/kns/brief/result.aspx?dbprefix=scdb"}
+        self.headers.update(header)
         while retry > 0:
             retry -= 1
-            header = {
-                "Referer": "http://kns.cnki.net/kns/brief/default_result.aspx"}
-            headers = self.headers.update(header)
+            try:
+                if self.proxies:
+                    response = self.s.get(
+                        url=url,
+                        headers=self.headers,
+                        proxies=self.proxies,
+                        timeout=self.timeout)
+                else:
+                    response = self.s.get(
+                        url=url,
+                        headers=self.headers,
+                        timeout=self.timeout)
+                response.encoding = 'utf-8'
+                if response.status_code == 200 and response:
+                    html = etree.HTML(response.text)
+                    page_href = html.xpath(r'//*[@id="Page_next"]/@href')
+                    if page_href:
+                        page_href = page_href[0]
+                        page_count = html.xpath(
+                            r'//*[@id="Page_next"]/../preceding-sibling::span/text()')
+                        page_count = int(page_count[0].split('/')[1])
+                        print(page_count, '------', page_href)
+                        return page_count, page_href
+                    else:
+                        return response
+            except Exception as e:
+                print(
+                    'Error occur in function : {} \n{}'.format(
+                        self.get_third.__name__,
+                        locals()))
+                continue
+
+    @logger.log_decoratore
+    def get_page(self, url):
+        """
+        由get_third中获取检索结果的页面数量以及页面href,爬取检索结果列表
+        :return:
+        """
+        retry = self.retries
+        header = {
+            "Referer": "http://kns.cnki.net/kns/brief/result.aspx?dbprefix=scdb"}
+        headers = self.headers.update(header)
+        print("self.s.cookies >> ", self.s.cookies.get_dict())
+        while retry > 0:
+            retry -= 1
             try:
                 if self.proxies:
                     response = self.s.get(
@@ -185,14 +232,8 @@ class CnkiSearch:
                         headers=headers,
                         timeout=self.timeout)
                 response.encoding = 'utf-8'
-                print('status_code>>', response.status_code)
                 if response.status_code == 200 and response:
                     return response
-                if response.status_code == 403:
-                    print(
-                        'Error occur in function : {} whith response.atatus_code == 403;\n{}'.format(
-                            self.get_third.__name__, locals()))
-                    continue
             except Exception as e:
                 print(
                     'Error occur in function : {} \n{}'.format(
@@ -207,7 +248,6 @@ class CnkiSearch:
         :param response:  页面请求响应
         :return: item
         """
-        print(response.text)
         if not response:
             return
         else:
@@ -241,7 +281,7 @@ class CnkiSearch:
                     item['download'] = 0
                 yield item
 
-    def do_search(self, keyword, sortkey=None):
+    def do_search(self, keyword):
         """
         整体执行类功能：构造查询url,并请求网页
         :param keyword:  检索的关键字
@@ -250,24 +290,48 @@ class CnkiSearch:
         """
         self.get_first()
         query = self.post_second(keyword=keyword)
-        # params = self.get_param(keyword=keyword)
         url = "http://kns.cnki.net/kns/brief/brief.aspx?pagename=" + query
-        # url = "http://kns.cnki.net/kns/brief/brief.aspx?pagename=" + params
-        response = self.get_third(url)
-        response.encoding = 'utf-8'
-        for item in self.parse_url(response):
-            yield item
+        result = self.get_third(url)
+        if isinstance(result, tuple):
+            page_count = result[0]
+            page_href = result[1]
+            for i in range(1, page_count + 1):
+                href_datas = page_href.split('&')
+                href_datas[0] = href_datas[0].split('=')[0] + '=' + str(i)
+                href = '&'.join(href_datas)
+                page_url = 'http://kns.cnki.net/kns/brief/brief.aspx' + href
+                print("page_url >> ", page_url)
+                response = self.get_page(url=page_url)
+                for item in self.parse_url(response):
+                    yield item
+        else:
+            for item in self.parse_url(result):
+                yield item
+
+            # print(response.status_code)
+
+
+def run_step1():
+    """
+    执行step1,检索并存储文献url
+    :return:
+    """
+    csvreader = CsvReader()
+    cnkisearch = CnkiSearch()
+    sqlmanager = SqlUrlManager()
+    for item in csvreader.csv_read():
+        # item['drugid'] = csvreader.csv_read()['drugid']
+        # item['search'] = csvreader.csv_read()['search']
+        for data in cnkisearch.do_search(keyword=item['search']):
+            item['title'] = data['title']
+            item['title_url'] = data['title_url']
+            item['authors'] = data['authors']
+            item['periodical'] = data['periodical']
+            item['publication_date'] = data['publication_date']
+            item['cited'] = data['cited']
+            item['download'] = data['download']
+            sqlmanager.save_url(item)
 
 
 if __name__ == "__main__":
-    cnkisearch = CnkiSearch()
-    sqlmanager = SqlUrlManager()
-    for item in cnkisearch.do_search("幽门螺旋杆菌"):
-        print(item)
-        # sqlmanager.save_url(item)
-
-# http://kns.cnki.net/kns/brief/brief.aspx?curpage=3&RecordsPerPage=20&QueryID=1&ID=&turnpage=1&tpagemode=L&dbPrefix=SCDB&Fields=&DisplayMode=listmode&PageName=ASP.brief_default_result_aspx&isinEn=1 HTTP/1.1
-#
-# http://kns.cnki.net/kns/brief/brief.aspx?pagename=ASP.brief_default_result_aspx&isinEn=1&dbPrefix=SCDB&dbCatalog=%e4%b8%ad%e5%9b%bd%e5%ad%a6%e6%9c%af%e6%96%87%e7%8c%ae%e7%bd%91%e7%bb%9c%e5%87%ba%e7%89%88%e6%80%bb%e5%ba%93&ConfigFile=SCDBINDEX.xml&research=off&t=1550635280753&keyValue=%E5%B9%BD%E9%97%A8%E8%9E%BA%E6%97%8B%E6%9D%86%E8%8F%8C&S=1&sorttype= HTTP/1.1
-
-
+    run_step1()
