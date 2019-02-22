@@ -52,19 +52,21 @@ class SqlUrlManager:
         """
         sql = r'''CREATE TABLE IF NOT EXISTS cnki_datas (
                   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                  drugid VARCHAR(16) NOT NULL COMMENT '药物编号',
                   title VARCHAR(256) NOT NULL COMMENT '文献标题',
                   authors VARCHAR(256) NOT NULL COMMENT '文献作者',
-                  abstract TEXT NOT NULL COMMENT '摘要',
+                  abstract TEXT COMMENT '摘要',
                   periodical VARCHAR(64) COMMENT '期刊名称',
-                  issue VARCHAR(24) NOT NULL COMMENT '出版日期',
-                  issn  VARCHAR(16) NOT NULL COMMENT 'ISSN号',
-                  catalog_keyword VARCHAR(64) NOT NULL COMMENT '分类关键字',
-                  catalog_ztcls VARCHAR(24) NOT NULL COMMENT '分类号',
+                  issue VARCHAR(24) COMMENT '出版日期',
+                  issn  VARCHAR(16) COMMENT 'ISSN号',
+                  catalog_keyword VARCHAR(64) COMMENT '分类关键字',
+                  catalog_ztcls VARCHAR(24) COMMENT '分类号',
                   url_state TINYINT UNSIGNED DEFAULT 0 COMMENT '爬取状态：0未访问，1未解析，2已解析',
                   title_url VARCHAR(512) NOT NULL COMMENT '文献路径',
                   publication_date VARCHAR(20) NOT NULL COMMENT '发表日期',
                   cited SMALLINT UNSIGNED  COMMENT '引用次数',
                   download SMALLINT UNSIGNED COMMENT '下载次数',
+                  INDEX drugid (drugid),
                   INDEX url_state (url_state)
                   )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;'''
         try:
@@ -79,8 +81,9 @@ class SqlUrlManager:
         :param data:  文献URL数据
         :return: 返回影响行数
         """
-        sql = '''INSERT INTO cnki_datas (title, authors, periodical, title_url, publication_date, cited, download
-                 ) VALUES ("{}","{}","{}","{}","{}","{}","{}");'''.format(
+        sql = '''INSERT INTO cnki_datas (drugid, title, authors, periodical, title_url, publication_date, cited,
+                 download) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}");'''.format(
+            data['drugid'],
             data['title'],
             data['authors'],
             data['periodical'],
@@ -117,7 +120,7 @@ class SqlUrlManager:
         except Exception as e:
             print("Query url Error: {}".format(e))
 
-    def update_url(self, flag, id):
+    def update_url(self, flag, data_id):
         """
         根据id编号更新数据库url_state
         :param flag: url状态标识：初始为0，更新1为已爬取未解析页面，更新2为已解析页面
@@ -125,7 +128,7 @@ class SqlUrlManager:
         :return:
         """
         sql = '''UPDATE cnki_datas SET url_state="{}" WHERE id="{}";'''.format(
-            flag, id)
+            flag, data_id)
         try:
             self.conn.connect()
             self.cursor.execute(sql)
